@@ -7,7 +7,7 @@ export const Container = () => {
   const [clientIdentity, setclientIdentity] = useState("");
   const [clientRoom, setclientRoom] = useState("");
   const [clientValue, setclientValue] = useState("");
-  const [Status, setStatus] = useState("");
+  const [Status] = useState("");
   const formatCPF = (cpf: string) => {
     cpf = cpf.replace(/\D/g, "");
     if (cpf.length <= 11) {
