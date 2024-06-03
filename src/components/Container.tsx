@@ -78,7 +78,7 @@ export const Container = () => {
       setError("");
     }, 5000);
   };
-  const Subimit = () => {
+  const Subimit = async () => {
     if (
       clientName.length == 0 ||
       clientDate.length == 0 ||
@@ -91,7 +91,7 @@ export const Container = () => {
     }
 
     setStatus(true);
-    api
+    await api
       .post("newClient", {
         name: clientName,
         date: clientDate,
