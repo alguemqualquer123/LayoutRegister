@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { useFetch } from "@app/lib/useFetch";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export const Container = () => {
   // const navigate = useNavigate()
@@ -11,7 +9,7 @@ export const Container = () => {
   const [clientValue, setclientValue] = useState("");
   const [Status, setStatus] = useState("");
   const formatCPF = (cpf: string) => {
-    cpf = cpf.replace(/\D/g, ""); // Remove tudo que não é dígito
+    cpf = cpf.replace(/\D/g, "");
     if (cpf.length <= 11) {
       return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
     }
