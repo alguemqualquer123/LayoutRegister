@@ -2,6 +2,7 @@ import React from "react";
 import "./style/global.css";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
+import "./Config.js";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

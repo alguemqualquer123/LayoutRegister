@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { api } from "@app/Config";
 
 export const Container = () => {
   // const navigate = useNavigate()
+  const [Error, setError] = useState("");
   const [clientName, setclientName] = useState("");
   const [clientDate, setclientDate] = useState("");
   const [clientIdentity, setclientIdentity] = useState("");
   const [clientRoom, setclientRoom] = useState("");
   const [clientValue, setclientValue] = useState("");
-  const [Status] = useState("");
+  const [Status, setStatus] = useState(false);
   const formatCPF = (cpf: string) => {
     cpf = cpf.replace(/\D/g, "");
     if (cpf.length <= 11) {
@@ -35,34 +37,27 @@ export const Container = () => {
   const FilterType = (type: string, text: any) => {
     switch (type) {
       case "Name":
-        console.log(type, text);
         setclientName(text);
         break;
       case "Value":
-        console.log(type, parseInt(text));
         setclientValue(text);
         break;
       case "NumberRoom":
-        console.log(type, text);
         setclientRoom(text);
         break;
       case "Identity":
         const cleanedText = text.replace(/\D/g, "");
         if (isCPF(cleanedText)) {
           const formattedCPF = formatCPF(cleanedText);
-          console.log(type, formattedCPF);
           setclientIdentity(formattedCPF);
         } else if (isRG(cleanedText)) {
           const formattedRG = formatRG(cleanedText);
-          console.log(type, formattedRG);
           setclientIdentity(formattedRG);
         } else {
-          console.log(type, text);
           setclientIdentity(text);
         }
         break;
       case "Date":
-        console.log(type, text);
         setclientDate(text);
         break;
       default:
@@ -75,6 +70,56 @@ export const Container = () => {
       style: "currency",
       currency: "BRL",
     }).format(number / 100);
+  };
+
+  const CurrentError = (text: string) => {
+    setError(text);
+    setTimeout(() => {
+      setError("");
+    }, 5000);
+  };
+  const Subimit = () => {
+    if (
+      clientName.length == 0 ||
+      clientDate.length == 0 ||
+      clientIdentity.length == 0 ||
+      clientRoom.length == 0 ||
+      clientValue.length == 0
+    ) {
+      CurrentError("Preencha os parametros corretamente !!!");
+      return;
+    }
+
+    setStatus(true);
+    api
+      .post("newClient", {
+        name: clientName,
+        date: clientDate,
+        identity: clientIdentity,
+        room: clientRoom,
+        value: clientValue,
+      })
+      .then((resulte) => {
+        CurrentError("Usuario Registrado 👍");
+        console.log(resulte);
+      })
+      .catch((error) => {
+        switch (error.response.status) {
+          case "403":
+            CurrentError("Cliente Já Registrado 💢");
+            break;
+          case "400":
+            setError("Erro Na Requisição 💥");
+            break;
+          default:
+        }
+        console.error(error);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setStatus(false);
+        }, 2000);
+      });
   };
 
   return (
@@ -152,9 +197,14 @@ export const Container = () => {
             }}
           />
         </div>
-        <h1>{Status}</h1>
-        <button className="mt-8 font-semibold bg-[rgba(0,0,0,0.5)] p-4 rounded-lg hover:bg-[rgba(0,0,0,1)] hover:text-red-900 text-white durarion-1000 transition-all ">
-          Submit Query
+        {Status && <div className="loader"></div>}
+        <h1 className="text-red-900">{Error}</h1>
+        <button
+          className="mt-8 font-semibold text-[10px] bg-[rgba(0,0,0,0.5)] p-4 rounded-lg hover:bg-[rgba(0,0,0,1)] hover:text-red-900 text-white durarion-1000 transition-all "
+          onClick={Subimit}
+          type="button"
+        >
+          Registrar Cliente
         </button>
       </form>
     </main>

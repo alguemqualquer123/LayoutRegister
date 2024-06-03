@@ -1,7 +1,7 @@
 import express from "express";
 const app = express();
 import cors from "cors";
-import { User, Admins, UserMail } from "./models/User.js";
+import { Clients } from "./models/User.js";
 import mongoose from "mongoose";
 app.use(cors());
 const PORT = 3000;
@@ -30,33 +30,6 @@ app.get("/getAdmins", async (req, res) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// http://localhost:3000/newAdmin
-// {
-//   "name": "Vini Santos",
-//   "discordId": "530706233389350912",
-//   "roles": [
-//       {
-//           "role": "Vendedor",
-//           "id": "4"
-//       }
-//   ]
-// }
-app.post("/newAdmin", async (req, res) => {
-  try {
-    const { name, discordId, roles } = req.body;
-    if (!name || !discordId || !roles)
-      return res.status(400).json({ erro: "Erro Ao Inserir Novo Admin." });
-    const Userexistent = await Admins.findOne({ discordId: discordId });
-    if (Userexistent) return res.json({ error: "Usuario Já Existente." });
-
-    const newUser = await Admins.create({ name, discordId, roles });
-    const GetUser = await Admins.find();
-    return res.status(200).json({ allAdmins: GetUser, return: newUser });
-  } catch (error) {
-    res.status(400).json({ erro: "Ocorreu algum erro ao fazer a postagem" });
-  }
-});
-
 // http://localhost:3000/updateAdmin
 // {
 //   "id": "530706233389350912",
@@ -120,6 +93,25 @@ app.delete("/deleteUser", async (req, res) => {
   }
 });
 
+app.post("/newClient", async (req, res) => {
+  try {
+    const { name, date, identity, room, value } = req.body;
+    const existentUser = await Clients.findOne({ identity: identity });
+
+    if (existentUser) {
+      res.status(403).json({ error: "Cliente Já Registrado" });
+      return 
+    }
+
+    const newUser = await Clients.create({ name, date, identity, room, value });
+
+    const allClients = await Clients.find();
+    return res.status(200).json({ AllClients: allClients, newClient: newUser });
+  } catch (error) {
+    console.error(error); 
+    res.status(400).json({ error: "Ocorreu algum erro ao fazer a postagem" });
+  }
+});
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
